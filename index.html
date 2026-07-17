@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ndubuisi Tyen Akin — Data Engineer &amp; ETL Specialist</title>
+<meta name="description" content="Ndubuisi Tyen Akin builds automated data quality pipelines, ETL systems, and bioinformatics parsing tools." />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          rail: '#0a0a0c',
+          panel: '#111114',
+          panel2: '#17171b',
+          hair: '#27272a',
+          emerald: {
+            glow: '#34d399',
+            bright: '#6ee7b7',
+          }
+        },
+        fontFamily: {
+          mono: ['"JetBrains Mono"', 'monospace'],
+          sans: ['"Inter"', 'sans-serif'],
+        },
+        boxShadow: {
+          glow: '0 0 0 1px rgba(52,211,153,0.25), 0 0 24px -4px rgba(52,211,153,0.35)',
+          glowSm: '0 0 0 1px rgba(52,211,153,0.35), 0 0 12px -2px rgba(52,211,153,0.45)',
+        },
+        animation: {
+          pulseSlow: 'pulseSlow 2.4s ease-in-out infinite',
+        },
+        keyframes: {
+          pulseSlow: {
+            '0%, 100%': { opacity: 1, boxShadow: '0 0 0 0 rgba(52,211,153,0.55)' },
+            '50%': { opacity: 0.85, boxShadow: '0 0 0 6px rgba(52,211,153,0)' },
+          }
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  html { background-color: #0a0a0c; }
+  body { font-feature-settings: "ss01"; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  ::selection { background: #34d399; color: #09090b; }
+
+  /* thin scrollbar for the pipeline rail on mobile */
+  .rail-scroll::-webkit-scrollbar { height: 0px; }
+
+  /* stage connector line */
+  .stage-line::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -100%;
+    width: 100%;
+    height: 1px;
+    background: #27272a;
+    z-index: 0;
+  }
+  .stage-item:first-child .stage-line::before { display: none; }
+
+  .card-hatch {
+    background-image: linear-gradient(135deg, rgba(52,211,153,0.05) 0%, rgba(52,211,153,0) 40%);
+  }
+
+  .focus-ring:focus-visible {
+    outline: 2px solid #34d399;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+</style>
+</head>
+
+<body class="bg-[#0a0a0c] text-zinc-300 font-sans antialiased">
+
+<!-- ============================================================ -->
+<!-- PIPELINE RAIL (sticky nav styled as an ETL run status bar)    -->
+<!-- ============================================================ -->
+<header class="sticky top-0 z-50 border-b border-hair bg-[#0a0a0c]/90 backdrop-blur">
+  <nav aria-label="Primary" class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="flex items-center justify-between h-14">
+      <a href="#hero" class="mono text-sm font-semibold text-zinc-100 tracking-tight focus-ring rounded">
+        <span class="text-emerald-glow">$</span> akin<span class="text-zinc-600">.pipeline</span>
+      </a>
+
+      <ul id="pipeline-rail" class="rail-scroll hidden md:flex items-center gap-8 overflow-x-auto mono text-[11px] uppercase tracking-widest">
+        <li class="stage-item relative"><a href="#hero" data-stage="hero" class="nav-link text-zinc-500 hover:text-emerald-bright transition-colors focus-ring rounded px-1">00_source</a></li>
+        <li class="stage-item relative"><a href="#stack" data-stage="stack" class="nav-link text-zinc-500 hover:text-emerald-bright transition-colors focus-ring rounded px-1">01_stack</a></li>
+        <li class="stage-item relative"><a href="#projects" data-stage="projects" class="nav-link text-zinc-500 hover:text-emerald-bright transition-colors focus-ring rounded px-1">02_build</a></li>
+        <li class="stage-item relative"><a href="#contract" data-stage="contract" class="nav-link text-zinc-500 hover:text-emerald-bright transition-colors focus-ring rounded px-1">03_deploy</a></li>
+      </ul>
+
+      <a href="#contract" class="mono text-[11px] uppercase tracking-widest px-3 py-2 rounded-md border border-emerald-glow/40 text-emerald-bright hover:bg-emerald-glow/10 transition-colors focus-ring">
+        run_query &rarr;
+      </a>
+    </div>
+
+    <!-- mobile stage strip -->
+    <ul class="rail-scroll md:hidden flex items-center gap-6 overflow-x-auto pb-3 mono text-[10px] uppercase tracking-widest">
+      <li><a href="#hero" data-stage="hero" class="nav-link text-zinc-500 whitespace-nowrap">00_source</a></li>
+      <li><a href="#stack" data-stage="stack" class="nav-link text-zinc-500 whitespace-nowrap">01_stack</a></li>
+      <li><a href="#projects" data-stage="projects" class="nav-link text-zinc-500 whitespace-nowrap">02_build</a></li>
+      <li><a href="#contract" data-stage="contract" class="nav-link text-zinc-500 whitespace-nowrap">03_deploy</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============================================================ -->
+  <!-- 1. HERO                                                       -->
+  <!-- ============================================================ -->
+  <section id="hero" class="relative overflow-hidden border-b border-hair">
+    <!-- faint grid backdrop -->
+    <div class="pointer-events-none absolute inset-0 opacity-[0.07]"
+         style="background-image: linear-gradient(#3f3f46 1px, transparent 1px), linear-gradient(90deg, #3f3f46 1px, transparent 1px); background-size: 42px 42px;"></div>
+    <div class="pointer-events-none absolute -top-32 right-0 w-[36rem] h-[36rem] rounded-full bg-emerald-glow/10 blur-[120px]"></div>
+
+    <div class="relative max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-24 sm:pt-28 sm:pb-32">
+
+      <div class="inline-flex items-center gap-2 mono text-[11px] uppercase tracking-widest text-emerald-bright border border-emerald-glow/30 rounded-full px-3 py-1 mb-8">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-glow animate-pulseSlow"></span>
+        pipeline status: accepting_contracts
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-50 leading-[1.08] max-w-4xl">
+        Ndubuisi Tyen Akin
+        <span class="block text-zinc-500 font-semibold text-2xl sm:text-3xl lg:text-4xl mt-3 mono tracking-tight">
+          Data Engineer <span class="text-emerald-glow">&amp;</span> ETL Specialist
+        </span>
+      </h1>
+
+      <p class="mt-7 max-w-2xl text-base sm:text-lg text-zinc-400 leading-relaxed">
+        I engineer automated data quality conveyor belts and pipelines that sanitize messy text arrays, handle missing value constraints, and parse raw biological/commercial datasets cleanly.
+      </p>
+
+      <!-- action buttons -->
+      <div class="mt-10 flex flex-wrap items-center gap-3">
+        <a href="https://github.com/Odariola" target="_blank" rel="noopener noreferrer"
+           class="group inline-flex items-center gap-2 bg-emerald-glow text-zinc-950 font-semibold text-sm px-5 py-3 rounded-lg hover:bg-emerald-bright transition-colors shadow-glowSm focus-ring">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.6.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.27 5.69.42.36.78 1.07.78 2.16 0 1.56-.02 2.82-.02 3.2 0 .31.21.67.8.56A10.51 10.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/ndubuisi-akin" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 border border-hair text-zinc-200 font-medium text-sm px-5 py-3 rounded-lg hover:border-emerald-glow/50 hover:text-emerald-bright transition-colors focus-ring">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.8 0 0 .78 0 1.74v20.52C0 23.22.8 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.74V1.74C24 .78 23.2 0 22.22 0Z"/></svg>
+          LinkedIn
+        </a>
+        <a href="https://wa.me/2347048186759" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 border border-hair text-zinc-200 font-medium text-sm px-5 py-3 rounded-lg hover:border-emerald-glow/50 hover:text-emerald-bright transition-colors focus-ring">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.87.5 3.62 1.44 5.14L2 22l5.12-1.5a9.9 9.9 0 0 0 4.92 1.31h.01c5.46 0 9.9-4.45 9.9-9.9C21.95 6.45 17.5 2 12.04 2Zm5.8 14.02c-.24.68-1.4 1.3-1.93 1.34-.5.05-1.13.07-1.83-.11-.42-.11-.96-.3-1.66-.6-2.92-1.26-4.83-4.2-4.98-4.4-.15-.19-1.2-1.59-1.2-3.03 0-1.44.75-2.15 1.02-2.44.27-.29.6-.36.8-.36.2 0 .4 0 .58.01.19.01.44-.07.68.53.24.6.83 2.07.9 2.22.07.15.12.33.02.53-.1.19-.15.31-.3.48-.14.17-.3.38-.43.51-.14.14-.29.29-.13.58.16.29.72 1.2 1.55 1.95 1.07.96 1.96 1.26 2.25 1.4.29.14.46.12.63-.07.17-.19.72-.85.92-1.14.19-.29.38-.24.63-.14.26.1 1.62.77 1.9.91.28.14.46.21.53.33.07.12.07.7-.17 1.38Z"/></svg>
+          WhatsApp
+        </a>
+        <a href="mailto:abioladaniel501@gmail.com"
+           class="inline-flex items-center gap-2 border border-hair text-zinc-200 font-medium text-sm px-5 py-3 rounded-lg hover:border-emerald-glow/50 hover:text-emerald-bright transition-colors focus-ring">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>
+          Email
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 2. TECHNICAL STACK GATE                                       -->
+  <!-- ============================================================ -->
+  <section id="stack" class="border-b border-hair bg-[#0a0a0c]">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20">
+
+      <div class="flex items-baseline gap-3 mb-2">
+        <span class="mono text-emerald-glow text-sm">01</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-50 tracking-tight">Technical Stack Gate</h2>
+      </div>
+      <p class="text-zinc-500 max-w-xl mb-12">Every build has to clear these three validation gates before it ships.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+        <!-- Languages -->
+        <div class="rounded-xl border border-hair bg-panel card-hatch p-6">
+          <div class="flex items-center gap-2 mb-5">
+            <span class="w-2 h-2 rounded-full bg-emerald-glow"></span>
+            <h3 class="mono text-xs uppercase tracking-widest text-zinc-400">Languages</h3>
+          </div>
+          <ul class="space-y-3">
+            <li class="flex items-center justify-between text-sm text-zinc-200 border-b border-hair/70 pb-3"><span>Python</span><span class="mono text-[10px] text-zinc-600">.py</span></li>
+            <li class="flex items-center justify-between text-sm text-zinc-200 border-b border-hair/70 pb-3"><span>Bash / Shell</span><span class="mono text-[10px] text-zinc-600">.sh</span></li>
+            <li class="flex items-center justify-between text-sm text-zinc-200"><span>SQL</span><span class="mono text-[10px] text-zinc-600">.sql</span></li>
+          </ul>
+        </div>
+
+        <!-- Frameworks -->
+        <div class="rounded-xl border border-hair bg-panel card-hatch p-6">
+          <div class="flex items-center gap-2 mb-5">
+            <span class="w-2 h-2 rounded-full bg-emerald-glow"></span>
+            <h3 class="mono text-xs uppercase tracking-widest text-zinc-400">Engineering Frameworks</h3>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="mono text-xs px-2.5 py-1.5 rounded-md bg-panel2 border border-hair text-zinc-300">Pandas</span>
+            <span class="mono text-xs px-2.5 py-1.5 rounded-md bg-panel2 border border-hair text-zinc-300">NumPy</span>
+            <span class="mono text-xs px-2.5 py-1.5 rounded-md bg-panel2 border border-hair text-zinc-300">Regex</span>
+            <span class="mono text-xs px-2.5 py-1.5 rounded-md bg-panel2 border border-hair text-zinc-300">ETL Pipelines</span>
+            <span class="mono text-xs px-2.5 py-1.5 rounded-md bg-panel2 border border-hair text-zinc-300">Git / VCS</span>
+            <span class="mono text-xs px-2.5 py-1.5 rounded-md bg-panel2 border border-hair text-zinc-300">Linux (WSL2)</span>
+          </div>
+        </div>
+
+        <!-- Specialized Domains -->
+        <div class="rounded-xl border border-emerald-glow/25 bg-panel card-hatch p-6 shadow-glow">
+          <div class="flex items-center gap-2 mb-5">
+            <span class="w-2 h-2 rounded-full bg-emerald-glow animate-pulseSlow"></span>
+            <h3 class="mono text-xs uppercase tracking-widest text-emerald-bright">Specialized Domains</h3>
+          </div>
+          <ul class="space-y-3 text-sm text-zinc-200">
+            <li class="flex gap-2"><span class="text-emerald-glow mono">&gt;</span>Data Quality Automation</li>
+            <li class="flex gap-2"><span class="text-emerald-glow mono">&gt;</span>Bioinformatics &amp; Genomic Sequence Parsing</li>
+            <li class="flex gap-2"><span class="text-emerald-glow mono">&gt;</span>Predictive Analytics Modelling</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 3. PRODUCTION PORTFOLIO FRAMEWORK                             -->
+  <!-- ============================================================ -->
+  <section id="projects" class="border-b border-hair bg-[#0a0a0c]">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-20">
+
+      <div class="flex items-baseline gap-3 mb-2">
+        <span class="mono text-emerald-glow text-sm">02</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-50 tracking-tight">Production Portfolio Framework</h2>
+      </div>
+      <p class="text-zinc-500 max-w-xl mb-12">Six shipped builds — each a self-contained ETL, analysis, or parsing job. Source lives on GitHub.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <!-- Project 1 -->
+        <article class="rounded-xl border border-hair bg-panel overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-5 py-3 border-b border-hair bg-panel2">
+            <span class="mono text-[11px] text-zinc-500">project/01</span>
+            <span class="mono text-[10px] px-2 py-0.5 rounded bg-emerald-glow/10 text-emerald-bright border border-emerald-glow/30">7-gate ETL</span>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="text-lg font-semibold text-zinc-50 mb-2">CleanDataBot v2.0</h3>
+            <p class="text-sm text-zinc-400 leading-relaxed mb-5">An automated ETL machine that runs text sanitization, currency stripping, null handling, deduplication, IQR outlier detection, and categorical encoding across 7 gates.</p>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Python</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Pandas</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Regex</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">NumPy</span>
+            </div>
+            <a href="https://github.com/Odariola" target="_blank" rel="noopener noreferrer" class="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-emerald-bright hover:text-emerald-glow transition-colors focus-ring rounded">
+              View source <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Project 2 -->
+        <article class="rounded-xl border border-hair bg-panel overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-5 py-3 border-b border-hair bg-panel2">
+            <span class="mono text-[11px] text-zinc-500">project/02</span>
+            <span class="mono text-[10px] px-2 py-0.5 rounded bg-emerald-glow/10 text-emerald-bright border border-emerald-glow/30">Genomics</span>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="text-lg font-semibold text-zinc-50 mb-2">SARS-CoV-2 Genomic Architecture Analysis</h3>
+            <p class="text-sm text-zinc-400 leading-relaxed mb-5">Custom Python scripts mapping viral sequence mutations, transcribing RNA text blocks, and tracking codon variations across viral string structures.</p>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Python</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Regex</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Bioinformatics</span>
+            </div>
+            <a href="https://github.com/Odariola" target="_blank" rel="noopener noreferrer" class="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-emerald-bright hover:text-emerald-glow transition-colors focus-ring rounded">
+              View source <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Project 3 -->
+        <article class="rounded-xl border border-hair bg-panel overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-5 py-3 border-b border-hair bg-panel2">
+            <span class="mono text-[11px] text-zinc-500">project/03</span>
+            <span class="mono text-[10px] px-2 py-0.5 rounded bg-emerald-glow/10 text-emerald-bright border border-emerald-glow/30">EDA</span>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="text-lg font-semibold text-zinc-50 mb-2">EDA Geo-Microarray Expression Lab</h3>
+            <p class="text-sm text-zinc-400 leading-relaxed mb-5">Exploratory data analysis, multi-dimensional array normalization, and quality control trimming on massive genomic microarray text matrices.</p>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Python</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">NumPy</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Pandas</span>
+            </div>
+            <a href="https://github.com/Odariola" target="_blank" rel="noopener noreferrer" class="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-emerald-bright hover:text-emerald-glow transition-colors focus-ring rounded">
+              View source <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Project 4 -->
+        <article class="rounded-xl border border-hair bg-panel overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-5 py-3 border-b border-hair bg-panel2">
+            <span class="mono text-[11px] text-zinc-500">project/04</span>
+            <span class="mono text-[10px] px-2 py-0.5 rounded bg-emerald-glow/10 text-emerald-bright border border-emerald-glow/30">Predictive</span>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="text-lg font-semibold text-zinc-50 mb-2">Telco Customer Churn Engine</h3>
+            <p class="text-sm text-zinc-400 leading-relaxed mb-5">End-to-end pipeline standardizing irregular customer logs, encoding categorical constraints, and handling null anomalies for clean predictive modeling.</p>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Python</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Pandas</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">SQL</span>
+            </div>
+            <a href="https://github.com/Odariola" target="_blank" rel="noopener noreferrer" class="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-emerald-bright hover:text-emerald-glow transition-colors focus-ring rounded">
+              View source <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Project 5 -->
+        <article class="rounded-xl border border-hair bg-panel overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-5 py-3 border-b border-hair bg-panel2">
+            <span class="mono text-[11px] text-zinc-500">project/05</span>
+            <span class="mono text-[10px] px-2 py-0.5 rounded bg-emerald-glow/10 text-emerald-bright border border-emerald-glow/30">Real-time</span>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="text-lg font-semibold text-zinc-50 mb-2">Automated Forex Trend Volatility Analyzer</h3>
+            <p class="text-sm text-zinc-400 leading-relaxed mb-5">A real-time data ingestion pipeline extracting raw currency parameters, stripping spacing noise, and parsing price time-series matrices via advanced Regex layers.</p>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Python</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Regex</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Pandas</span>
+            </div>
+            <a href="https://github.com/Odariola" target="_blank" rel="noopener noreferrer" class="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-emerald-bright hover:text-emerald-glow transition-colors focus-ring rounded">
+              View source <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Project 6 -->
+        <article class="rounded-xl border border-hair bg-panel overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-5 py-3 border-b border-hair bg-panel2">
+            <span class="mono text-[11px] text-zinc-500">project/06</span>
+            <span class="mono text-[10px] px-2 py-0.5 rounded bg-emerald-glow/10 text-emerald-bright border border-emerald-glow/30">Spatial EDA</span>
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <h3 class="text-lg font-semibold text-zinc-50 mb-2">Airbnb NYC 2019 Spatial Data Analysis</h3>
+            <p class="text-sm text-zinc-400 leading-relaxed mb-5">Heavy spatial and pricing exploratory data analysis, standardizing trailing text data blocks, and running outlier imputation scripts.</p>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Python</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">Pandas</span>
+              <span class="mono text-[10px] px-2 py-1 rounded bg-panel2 border border-hair text-zinc-400">NumPy</span>
+            </div>
+            <a href="https://github.com/Odariola" target="_blank" rel="noopener noreferrer" class="mt-auto inline-flex items-center gap-1.5 text-sm font-medium text-emerald-bright hover:text-emerald-glow transition-colors focus-ring rounded">
+              View source <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 4. WHITE-LABEL CONTRACT HOOK                                  -->
+  <!-- ============================================================ -->
+  <section id="contract" class="relative overflow-hidden bg-[#0a0a0c]">
+    <div class="pointer-events-none absolute inset-0 opacity-[0.06]"
+         style="background-image: linear-gradient(#3f3f46 1px, transparent 1px), linear-gradient(90deg, #3f3f46 1px, transparent 1px); background-size: 42px 42px;"></div>
+    <div class="pointer-events-none absolute -bottom-40 left-1/2 -translate-x-1/2 w-[42rem] h-[42rem] rounded-full bg-emerald-glow/10 blur-[130px]"></div>
+
+    <div class="relative max-w-4xl mx-auto px-5 sm:px-8 py-24 text-center">
+      <div class="mono text-emerald-glow text-sm mb-3">03_deploy</div>
+      <h2 class="text-2xl sm:text-4xl font-bold text-zinc-50 tracking-tight mb-5">
+        White-Label Data Automation, <span class="text-emerald-bright">Under Contract</span>
+      </h2>
+      <p class="text-zinc-400 max-w-2xl mx-auto leading-relaxed mb-10">
+        I build and hand off data automation pipelines for startups and lead-generation agencies &mdash; white-labeled, documented, and ready to run in your stack. If your team is buried in messy CSVs, broken CRM exports, or unreliable scraped leads, I can engineer the cleanup layer.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <a href="mailto:abioladaniel501@gmail.com"
+           class="inline-flex items-center gap-2 bg-emerald-glow text-zinc-950 font-semibold text-sm px-6 py-3.5 rounded-lg hover:bg-emerald-bright transition-colors shadow-glow focus-ring">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>
+          Email a project brief
+        </a>
+        <a href="https://wa.me/2347048186759" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 border border-hair text-zinc-100 font-medium text-sm px-6 py-3.5 rounded-lg hover:border-emerald-glow/50 hover:text-emerald-bright transition-colors focus-ring">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.87.5 3.62 1.44 5.14L2 22l5.12-1.5a9.9 9.9 0 0 0 4.92 1.31h.01c5.46 0 9.9-4.45 9.9-9.9C21.95 6.45 17.5 2 12.04 2Zm5.8 14.02c-.24.68-1.4 1.3-1.93 1.34-.5.05-1.13.07-1.83-.11-.42-.11-.96-.3-1.66-.6-2.92-1.26-4.83-4.2-4.98-4.4-.15-.19-1.2-1.59-1.2-3.03 0-1.44.75-2.15 1.02-2.44.27-.29.6-.36.8-.36.2 0 .4 0 .58.01.19.01.44-.07.68.53.24.6.83 2.07.9 2.22.07.15.12.33.02.53-.1.19-.15.31-.3.48-.14.17-.3.38-.43.51-.14.14-.29.29-.13.58.16.29.72 1.2 1.55 1.95 1.07.96 1.96 1.26 2.25 1.4.29.14.46.12.63-.07.17-.19.72-.85.92-1.14.19-.29.38-.24.63-.14.26.1 1.62.77 1.9.91.28.14.46.21.53.33.07.12.07.7-.17 1.38Z"/></svg>
+          Chat on WhatsApp
+        </a>
+      </div>
+
+      <p class="mono text-[11px] text-zinc-600 mt-8">+234 704 818 6759 &nbsp;&middot;&nbsp; abioladaniel501@gmail.com</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================ -->
+<!-- FOOTER                                                        -->
+<!-- ============================================================ -->
+<footer class="border-t border-hair bg-[#0a0a0c]">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p class="mono text-xs text-zinc-600">&copy; <span id="year"></span> Ndubuisi Tyen Akin &mdash; process exited 0</p>
+    <div class="flex items-center gap-5 mono text-xs text-zinc-500">
+      <a href="https://github.com/Odariola" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-bright transition-colors focus-ring rounded">GitHub</a>
+      <a href="https://www.linkedin.com/in/ndubuisi-akin" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-bright transition-colors focus-ring rounded">LinkedIn</a>
+      <a href="mailto:abioladaniel501@gmail.com" class="hover:text-emerald-bright transition-colors focus-ring rounded">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Scrollspy for the pipeline rail
+  const sections = ['hero', 'stack', 'projects', 'contract'].map(id => document.getElementById(id));
+  const links = document.querySelectorAll('.nav-link');
+
+  const setActive = (id) => {
+    links.forEach(link => {
+      if (link.dataset.stage === id) {
+        link.classList.add('text-emerald-bright');
+        link.classList.remove('text-zinc-500');
+      } else {
+        link.classList.remove('text-emerald-bright');
+        link.classList.add('text-zinc-500');
+      }
+    });
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        setActive(entry.target.id);
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+
+  sections.forEach(sec => sec && observer.observe(sec));
+</script>
+
+</body>
+</html>
